@@ -1,54 +1,21 @@
 import fs from"node:fs"
-const L="udlr",U="UDLR",C=(a,b)=>a-b,
-I=process.env.MAKEFUN_INPUT_DIR||"/input",O=process.env.MAKEFUN_OUTPUT_DIR||"/output";
-let Dl;
-const P=t=>{let r=t.trim().split("\n"),w=r[0].length,
-W=new Uint8Array(w*r.length),G=[],b=[],p=-1;
-Dl=[-w,w,-1,1];
-r.forEach((s,y)=>{for(let x=0;x<s.length;x++){let i=y*w+x,c=s[x];
-if(c=="#"){W[i]=1;continue}
-if(".*+".includes(c))G.push(i);if("$*".includes(c))b.push(i);if("@+".includes(c))p=i}});
-return{w,W,G,B:b.sort(C),p}};
-const S=l=>{let{W,G,B,p}=l,N=W.length,g=new Uint8Array(N),v=new Uint8Array(N),
-a=new Int32Array(N),fq=[...G];
-for(let x of G)g[x]=v[x]=1;
-for(let i=0;i<fq.length;i++)for(let d of Dl){let y=fq[i]-d;
-if(!W[y]&&!W[y-d]&&!v[y]){v[y]=1;fq.push(y)}}
-let q=[B],P=[p],M=[""],s=new Set([B.join()+","+p]);
-for(let h=0;h<q.length;h++){let B=q[h];
-a.fill(-1);fq=[P[h]];a[P[h]]=P[h];
-for(let i=0;i<fq.length;i++){let u=fq[i];
-for(let d of Dl){let n=u+d;if(!W[n]&&!B.includes(n)&&a[n]<0){a[n]=u;fq.push(n)}}}
-for(let j=0;j<B.length;j++){let Q=B[j];
-for(let k=0;k<4;k++){let d=Dl[k],t=Q+d;
-if(a[Q-d]<0||W[t]||B.includes(t)||!v[t])continue;
-let n=B.slice();n[j]=t;n.sort(C);
-let K=n.join()+","+Q;
-if(s.has(K))continue;
-if(q.length>=250000)return null;
-let eg="";
-for(let c=Q-d;c!=P[h];c=a[c])eg=L[Dl.indexOf(c-a[c])]+eg;
-let m=M[h]+eg+U[k];
-s.add(K);q.push(n);P.push(Q);M.push(m);
-if(n.every(x=>g[x]))return{moves:m,player:Q}}}}
-return null};
-const R=l=>{let{w,W,G,B,p}=l,row=(p/w)|0;
-let M=[],seen=new Uint8Array(W.length);
-for(let b of B){if(seen[b])continue;
-let q=[b];seen[b]=1;let r={B:[],G:[]};
-for(let i=0;i<q.length;i++){let s=q[i];
-if(G.includes(s))r.G.push(s);if(B.includes(s))r.B.push(s);
-for(let d of Dl){let n=s+d;
-if(!W[n]&&((n/w)|0)!=row&&!seen[n]){seen[n]=1;q.push(n)}}}
-if(r.B.length!=r.G.length)return null;
-M.push(r)}
-return M};
-const Y=l=>{let r=R(l);if(!r)return"";
-let p=l.p,m="";
-for(let rm of r){let W=l.W.slice();
-for(let o of r)if(o!==rm)for(let b of o.done?o.G:o.B)W[b]=1;
-let s=S({W,G:rm.G,B:rm.B.sort(C),p});
-if(!s)return"";m+=s.moves;p=s.player;rm.done=1}
-return m};
-for(let id of fs.readdirSync(I)){let m=Y(P(fs.readFileSync(I+"/"+id+"/level.txt","utf8")));
-fs.mkdirSync(O+"/"+id,{recursive:true});fs.writeFileSync(O+"/"+id+"/solution.txt",m)}
+let w,D,E=process.env,I=E.MAKEFUN_INPUT_DIR||"/input",O=E.MAKEFUN_OUTPUT_DIR||"/output",C=(a,b)=>a-b
+const F=(s,G,B,p)=>{let V={[B+","+p]:1},Q=[{b:B,p,m:""}]
+for(let h=0;h<Q.length;h++){let{b,p,m}=Q[h],R={[p]:""},f=[p]
+for(let u of f)for(let k=0;k<4;k++){let n=u+D[k];if(s[n]!="#"&&!b.includes(n)&&!(n in R)){R[n]=R[u]+"udlr"[k];f.push(n)}}
+for(let j=0;j<b.length;j++)for(let k=0;k<4;k++){let t=b[j]+D[k],u=b[j]-D[k]
+if(!(u in R)||s[t]=="#"||b.includes(t))continue
+let n=b.slice();n[j]=t;n.sort(C);let K=n+","+b[j]
+if(V[K])continue
+V[K]=1;let M2=m+R[u]+"UDLR"[k];Q.push({b:n,p:b[j],m:M2})
+if(n.every(x=>G.includes(x)))return[M2,b[j]]}}
+return null}
+for(let id of fs.readdirSync(I)){let t=fs.readFileSync(I+"/"+id+"/level.txt","utf8");w=t.indexOf("\n");let s=t.replace(/\n/g,""),G=[],B=[],p=-1
+for(let i=0;i<s.length;i++){if(".*+".includes(s[i]))G.push(i);if("$*".includes(s[i]))B.push(i);if("@+".includes(s[i]))p=i}
+D=[-w,w,-1,1];let m="",r=(p/w)|0,K=[]
+while(B.length){let q=[B[0]],v={[B[0]]:1},b2=[],g2=[]
+for(let x of q){G.includes(x)&&g2.push(x);B.includes(x)&&b2.push(x)
+for(let d of D){let n=x+d;if(s[n]!="#"&&(n/w|0)!=r&&!v[n]){v[n]=1;q.push(n)}}}
+let a=[...s];for(let b of[...B,...K])if(!b2.includes(b))a[b]="#"
+let z=F(a,g2,b2.sort(C),p);if(!z){m="";break}m+=z[0];p=z[1];K.push(...g2);B=B.filter(b=>!b2.includes(b))}
+let d=O+"/"+id;fs.mkdirSync(d,{recursive:true});fs.writeFileSync(d+"/solution.txt",m)}
